@@ -10,8 +10,8 @@ var tileX, tileY;
 
 //Variables relacionadas con el tablero de juego
 var tablero;
-var filas = 10;
-var columnas = 10;
+var filas = 100;
+var columnas = 100;
 
 var negro = '#000000';
 var blanco = '#FFFFFF';
@@ -39,6 +39,8 @@ function init() {
     // Calculamos los tamaños de los lados rectangulos
     tileX = Math.floor(canvasX / filas);
     tileY = Math.floor(canvasY / columnas);
+
+    iniciarTablero();
 
 }
 
