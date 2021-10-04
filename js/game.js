@@ -69,6 +69,22 @@ function iniciarTablero() {
 
 }
 
+function calculaNuevoEstado(x, y) {
+
+    // Obtener la celula segun la posicion 
+    let celula = this.celulas[x][y];
+
+    // Obtener el numero de celulas vivas a su alrededor
+    let celulasVecinasVivas = contarVecinoVivos(celula);
+
+    // Generar un nuevo estado segun el numero celulas vivas a su alrededor
+    let nuevoEstado = calcularNuevoEstado(celula.isAlive, celulasVecinasVivas);
+
+    // Retornar una nueva celula con las coordenadas recibidas, pero con el nuevo estado
+    return nuevaCelula = new Celula(x, y, nuevoEstado);
+
+}
+
 function contarVecinoVivos(celula) {
 
     /*
