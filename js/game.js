@@ -16,6 +16,8 @@ var columnas = 10;
 var negro = '#000000';
 var blanco = '#FFFFFF';
 
+var celulas = inicializarCelulas(filas, columnas);
+
 var Celula = function (valorX, valorY, estado) {
 
     this.posicionX = valorX;
@@ -38,6 +40,17 @@ function init() {
     tileX = Math.floor(canvasX / filas);
     tileY = Math.floor(canvasY / columnas);
 
+}
+
+function inicializarCelulas(filas, columnas) {
+
+    var array = new Array(filas);
+
+    for (y = 0; y < filas; y++) {
+        array[y] = new Array(columnas);
+    }
+
+    return array;
 }
 
 function dibujarCelda(ejeX, ejeY, tamX, tamY, color) {
