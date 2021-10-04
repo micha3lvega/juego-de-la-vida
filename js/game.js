@@ -44,6 +44,30 @@ function init() {
 
 }
 
+
+function mutacion() {
+
+    // Generar un arreglo vacio segun el numero de filas y columnas
+    var nuevasCelulas = inicializarCelulas(filas, columnas);
+
+    // Recorrer las filas
+    for (y = 0; y < filas; y++) {
+
+        // Recorrer las columnas
+        for (x = 0; x < columnas; x++) {
+
+            // En el arreglo segun la fila y la columna agregar una celula con el nuevo estado
+            nuevasCelulas[x][y] = calculaNuevoEstado(x, y);
+
+        }
+
+    }
+
+    // Retornar un nuevo arreglo con las celulas, pero con el estado actualizado segun las reglas de Conway
+    return nuevasCelulas;
+
+}
+
 function iniciarTablero() {
 
     // Recorrer las filas del tablero
