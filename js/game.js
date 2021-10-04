@@ -174,6 +174,37 @@ function calcularNuevoEstado(isAlive, celulasVecinasVivas) {
 
 }
 
+function redibujarTablero(nuevasCelulas) {
+
+    //Limpiar el tablero
+    limpiarTablero();
+
+    // Recorrer las filas
+    for (y = 0; y < filas; y++) {
+
+        // Recorrer las columnas de cada fila
+        for (x = 0; x < columnas; x++) {
+
+            // Obtener la celula de esa posicion especifica
+            var celula = nuevasCelulas[x][y];
+
+            // Dibujar la celula segun su estado
+            if (celula.isAlive) {
+                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, blanco);
+            } else {
+                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, negro);
+            }
+
+            // Asignar nueva celula al arreglo global
+            this.celulas[x][y] = celula;
+
+        }
+
+    }
+
+}
+
+
 function inicializarCelulas(filas, columnas) {
 
     var array = new Array(filas);
