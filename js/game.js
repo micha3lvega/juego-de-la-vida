@@ -40,4 +40,12 @@ function init() {
 
 }
 
-console.log(':)');
+function dibujarCelda(ejeX, ejeY, tamX, tamY, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(ejeX, ejeY, tamX, tamY);
+}
+
+function limpiarTablero() {
+    canvas.width = canvas.width;
+    canvas.height = canvas.height;
+}
