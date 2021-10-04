@@ -16,4 +16,12 @@ var columnas = 10;
 var negro = '#000000';
 var blanco = '#FFFFFF';
 
+var Celula = function (valorX, valorY, estado) {
+
+    this.posicionX = valorX;
+    this.posicionY = valorY;
+    this.isAlive = estado == 1; // Vivo 1, Muerto = 0
+
+}
+
 console.log(':)');
