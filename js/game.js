@@ -44,6 +44,16 @@ function init() {
 
 }
 
+async function mutar() {
+
+    // Actualiza el estado de las celulas
+    var nuevasCelulas = mutacion();
+    
+    // Actualizar tablero
+    redibujarTablero(nuevasCelulas);
+
+}
+
 
 function mutacion() {
 
