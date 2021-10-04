@@ -24,4 +24,20 @@ var Celula = function (valorX, valorY, estado) {
 
 }
 
+function init() {
+
+    // Asociamos el canvas
+    canvas = document.getElementById('pantalla');
+    ctx = canvas.getContext('2d');
+
+    // Ajustamos el tamaño del canvas
+    canvas.width = canvasX;
+    canvas.height = canvasY;
+
+    // Calculamos los tamaños de los lados rectangulos
+    tileX = Math.floor(canvasX / filas);
+    tileY = Math.floor(canvasY / columnas);
+
+}
+
 console.log(':)');
