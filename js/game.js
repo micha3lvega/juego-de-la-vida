@@ -1,7 +1,7 @@
 // Variables globales
 var ctx;
 var canvas;
-var fps = 3;
+var fps = 30;
 
 // Pixeles
 var canvasX = 500; //pixels ancho
@@ -42,13 +42,20 @@ function init() {
 
     iniciarTablero();
 
+    // Llamar el metodo mutar un numero N dado según los fps en un segundo
+    setInterval(function () {
+
+        mutar();
+
+    }, 1000 / fps);
+
 }
 
 async function mutar() {
 
     // Actualiza el estado de las celulas
     var nuevasCelulas = mutacion();
-    
+
     // Actualizar tablero
     redibujarTablero(nuevasCelulas);
 
