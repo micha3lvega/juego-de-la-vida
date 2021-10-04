@@ -54,7 +54,7 @@ function iniciarTablero() {
 
             // Crear una celula con un estado al azar
             let celula = new Celula(x, y, Math.floor(Math.random() * 2));
-            
+
             // Dibujar la celula con el color correspondiente
             if (celula.isAlive) { // Blanco para las celulas vivas
                 this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, blanco);
@@ -66,6 +66,46 @@ function iniciarTablero() {
         }
 
     }
+
+}
+
+function contarVecinoVivos(celula) {
+
+    /*
+    [X-1,Y-1]	[X+0,Y-1]	[X+1,Y-1]
+    [X-1,Y+0]	[X+0,Y+0]	[X+1,Y+0]
+    [X-1,Y+1]	[X+0,Y+1]	[X+1,Y+1]
+    */
+    let contadorDeCelulasVivas = 0;
+
+    // Recorrer los vecinos en el eje X
+    for (let x = (celula.posicionX - 1); x < (celula.posicionX + 2); x++) {
+
+        // Recorrer los vecinos en el eje Y
+        for (let y = (celula.posicionY - 1); y < (celula.posicionY + 2); y++) {
+
+            // Si la celula esta al borde del tablero tomar los del otro lado para dar la sensacion de un mundo circular
+            let xVecino = (celula.posicionX + x + columnas) % columnas;
+            let yVecino = (celula.posicionY + y + filas) % filas;
+
+            // Recuperar la celula vecina
+            let vecino = this.celulas[xVecino][yVecino];
+
+            // Segun el estado sumar o no al contador
+            if (vecino.isAlive) {
+                contadorDeCelulasVivas++;
+            }
+
+        }
+
+    }
+
+    // Como en el recorrido se sumo el valor del propio estado de la celula debe ser restado
+    if (celula.isAlive) {
+        contadorDeCelulasVivas--;
+    }
+
+    return contadorDeCelulasVivas;
 
 }
 
