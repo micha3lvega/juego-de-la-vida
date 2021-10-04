@@ -42,6 +42,31 @@ function init() {
 
 }
 
+function iniciarTablero() {
+
+    // Recorrer las filas del tablero
+    for (y = 0; y < filas; y++) {
+
+        // Recorrer las columnas de cada fila
+        for (x = 0; x < columnas; x++) {
+
+            // Crear una celula con un estado al azar
+            let celula = new Celula(x, y, Math.floor(Math.random() * 2));
+            
+            // Dibujar la celula con el color correspondiente
+            if (celula.isAlive) { // Blanco para las celulas vivas
+                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, blanco);
+            } else { // Negro para las muertas
+                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, negro);
+            }
+
+            this.celulas[x][y] = celula;
+        }
+
+    }
+
+}
+
 function inicializarCelulas(filas, columnas) {
 
     var array = new Array(filas);
