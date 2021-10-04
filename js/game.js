@@ -109,6 +109,31 @@ function contarVecinoVivos(celula) {
 
 }
 
+function calcularNuevoEstado(isAlive, celulasVecinasVivas) {
+
+    // Aplicamos las reglas de Conway
+
+    // Si una célula está viva y tiene dos o tres vecinas vivas, sobrevive.
+    if (isAlive) {
+        if (celulasVecinasVivas == 2 || celulasVecinasVivas == 3) {
+            return true;
+        }
+    }
+
+    // Si una célula está muerta y tiene tres vecinas vivas, nace.
+    if (!isAlive && celulasVecinasVivas == 3) {
+        return true;
+    }
+
+    // Si una célula está viva y tiene más de tres vecinas vivas, muere.
+    if (isAlive && celulasVecinasVivas > 3) {
+        return false;
+    }
+
+    return isAlive;
+
+}
+
 function inicializarCelulas(filas, columnas) {
 
     var array = new Array(filas);
