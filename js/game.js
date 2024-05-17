@@ -1,244 +1,120 @@
 // Variables globales
-var ctx;
-var canvas;
-var fps = 30;
+let ctx;
+let canvas;
+const fps = 30;
+const canvasX = 500; // ancho del canvas en pixeles
+const canvasY = 500; // alto del canvas en pixeles
+let tileX, tileY;
+const filas = 100;
+const columnas = 100;
+const negro = '#000000';
+const blanco = '#FFFFFF';
+let tablero = inicializarTablero(filas, columnas);
 
-// Pixeles
-var canvasX = 500; //pixels ancho
-var canvasY = 500; //pixels alto
-var tileX, tileY;
-
-//Variables relacionadas con el tablero de juego
-var tablero;
-var filas = 100;
-var columnas = 100;
-
-var negro = '#000000';
-var blanco = '#FFFFFF';
-
-var celulas = inicializarCelulas(filas, columnas);
-
-var Celula = function (valorX, valorY, estado) {
-
-    this.posicionX = valorX;
-    this.posicionY = valorY;
-    this.isAlive = estado == 1; // Vivo 1, Muerto = 0
-
-}
-
+// Inicializa el canvas y empieza el juego
 function init() {
-
-    // Asociamos el canvas
     canvas = document.getElementById('pantalla');
     ctx = canvas.getContext('2d');
-
-    // Ajustamos el tamaño del canvas
     canvas.width = canvasX;
     canvas.height = canvasY;
-
-    // Calculamos los tamaños de los lados rectangulos
     tileX = Math.floor(canvasX / filas);
     tileY = Math.floor(canvasY / columnas);
-
     iniciarTablero();
-
-    // Llamar el metodo mutar un numero N dado según los fps en un segundo
-    setInterval(function () {
-
-        mutar();
-
-    }, 1000 / fps);
-
+    setInterval(mutar, 1000 / fps);
 }
 
-async function mutar() {
-
-    // Actualiza el estado de las celulas
-    var nuevasCelulas = mutacion();
-
-    // Actualizar tablero
-    redibujarTablero(nuevasCelulas);
-
-}
-
-
-function mutacion() {
-
-    // Generar un arreglo vacio segun el numero de filas y columnas
-    var nuevasCelulas = inicializarCelulas(filas, columnas);
-
-    // Recorrer las filas
-    for (y = 0; y < filas; y++) {
-
-        // Recorrer las columnas
-        for (x = 0; x < columnas; x++) {
-
-            // En el arreglo segun la fila y la columna agregar una celula con el nuevo estado
-            nuevasCelulas[x][y] = calculaNuevoEstado(x, y);
-
-        }
-
+// Inicializa un tablero de celdas
+function inicializarTablero(filas, columnas) {
+    const array = new Array(filas);
+    for (let y = 0; y < filas; y++) {
+        array[y] = new Array(columnas).fill(null);
     }
-
-    // Retornar un nuevo arreglo con las celulas, pero con el estado actualizado segun las reglas de Conway
-    return nuevasCelulas;
-
-}
-
-function iniciarTablero() {
-
-    // Recorrer las filas del tablero
-    for (y = 0; y < filas; y++) {
-
-        // Recorrer las columnas de cada fila
-        for (x = 0; x < columnas; x++) {
-
-            // Crear una celula con un estado al azar
-            let celula = new Celula(x, y, Math.floor(Math.random() * 2));
-
-            // Dibujar la celula con el color correspondiente
-            if (celula.isAlive) { // Blanco para las celulas vivas
-                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, blanco);
-            } else { // Negro para las muertas
-                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, negro);
-            }
-
-            this.celulas[x][y] = celula;
-        }
-
-    }
-
-}
-
-function calculaNuevoEstado(x, y) {
-
-    // Obtener la celula segun la posicion 
-    let celula = this.celulas[x][y];
-
-    // Obtener el numero de celulas vivas a su alrededor
-    let celulasVecinasVivas = contarVecinoVivos(celula);
-
-    // Generar un nuevo estado segun el numero celulas vivas a su alrededor
-    let nuevoEstado = calcularNuevoEstado(celula.isAlive, celulasVecinasVivas);
-
-    // Retornar una nueva celula con las coordenadas recibidas, pero con el nuevo estado
-    return nuevaCelula = new Celula(x, y, nuevoEstado);
-
-}
-
-function contarVecinoVivos(celula) {
-
-    /*
-    [X-1,Y-1]	[X+0,Y-1]	[X+1,Y-1]
-    [X-1,Y+0]	[X+0,Y+0]	[X+1,Y+0]
-    [X-1,Y+1]	[X+0,Y+1]	[X+1,Y+1]
-    */
-    let contadorDeCelulasVivas = 0;
-
-    // Recorrer los vecinos en el eje X
-    for (let x = (celula.posicionX - 1); x < (celula.posicionX + 2); x++) {
-
-        // Recorrer los vecinos en el eje Y
-        for (let y = (celula.posicionY - 1); y < (celula.posicionY + 2); y++) {
-
-            // Si la celula esta al borde del tablero tomar los del otro lado para dar la sensacion de un mundo circular
-            let xVecino = (celula.posicionX + x + columnas) % columnas;
-            let yVecino = (celula.posicionY + y + filas) % filas;
-
-            // Recuperar la celula vecina
-            let vecino = this.celulas[xVecino][yVecino];
-
-            // Segun el estado sumar o no al contador
-            if (vecino.isAlive) {
-                contadorDeCelulasVivas++;
-            }
-
-        }
-
-    }
-
-    // Como en el recorrido se sumo el valor del propio estado de la celula debe ser restado
-    if (celula.isAlive) {
-        contadorDeCelulasVivas--;
-    }
-
-    return contadorDeCelulasVivas;
-
-}
-
-function calcularNuevoEstado(isAlive, celulasVecinasVivas) {
-
-    // Aplicamos las reglas de Conway
-
-    // Si una célula está viva y tiene dos o tres vecinas vivas, sobrevive.
-    if (isAlive) {
-        if (celulasVecinasVivas == 2 || celulasVecinasVivas == 3) {
-            return true;
-        }
-    }
-
-    // Si una célula está muerta y tiene tres vecinas vivas, nace.
-    if (!isAlive && celulasVecinasVivas == 3) {
-        return true;
-    }
-
-    // Si una célula está viva y tiene más de tres vecinas vivas, muere.
-    if (isAlive && celulasVecinasVivas > 3) {
-        return false;
-    }
-
-    return isAlive;
-
-}
-
-function redibujarTablero(nuevasCelulas) {
-
-    //Limpiar el tablero
-    limpiarTablero();
-
-    // Recorrer las filas
-    for (y = 0; y < filas; y++) {
-
-        // Recorrer las columnas de cada fila
-        for (x = 0; x < columnas; x++) {
-
-            // Obtener la celula de esa posicion especifica
-            var celula = nuevasCelulas[x][y];
-
-            // Dibujar la celula segun su estado
-            if (celula.isAlive) {
-                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, blanco);
-            } else {
-                this.dibujarCelda((this.y * tileY), (this.x * tileX), tileX, tileY, negro);
-            }
-
-            // Asignar nueva celula al arreglo global
-            this.celulas[x][y] = celula;
-
-        }
-
-    }
-
-}
-
-
-function inicializarCelulas(filas, columnas) {
-
-    var array = new Array(filas);
-
-    for (y = 0; y < filas; y++) {
-        array[y] = new Array(columnas);
-    }
-
     return array;
 }
 
-function dibujarCelda(ejeX, ejeY, tamX, tamY, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(ejeX, ejeY, tamX, tamY);
+// Inicia el tablero con células aleatorias
+function iniciarTablero() {
+    for (let y = 0; y < filas; y++) {
+        for (let x = 0; x < columnas; x++) {
+            const estado = Math.floor(Math.random() * 2);
+            tablero[x][y] = new Celula(x, y, estado);
+            dibujarCelda(x, y, estado ? blanco : negro);
+        }
+    }
 }
 
-function limpiarTablero() {
-    canvas.width = canvas.width;
-    canvas.height = canvas.height;
+// Representa una celula
+function Celula(x, y, estado) {
+    this.x = x;
+    this.y = y;
+    this.isAlive = estado === 1;
 }
+
+// Calcula el nuevo estado del tablero
+function mutar() {
+    const nuevasCelulas = inicializarTablero(filas, columnas);
+    for (let y = 0; y < filas; y++) {
+        for (let x = 0; x < columnas; x++) {
+            nuevasCelulas[x][y] = calculaNuevoEstado(x, y);
+        }
+    }
+    tablero = nuevasCelulas;
+    redibujarTablero();
+}
+
+// Calcula el nuevo estado de una celula basándose en sus vecinos
+function calculaNuevoEstado(x, y) {
+    const celula = tablero[x][y];
+    const celulasVecinasVivas = contarVecinosVivos(x, y);
+    const nuevoEstado = calcularNuevoEstado(celula.isAlive, celulasVecinasVivas);
+    return new Celula(x, y, nuevoEstado);
+}
+
+// Cuenta los vecinos vivos de una celula
+function contarVecinosVivos(x, y) {
+    let contador = 0;
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            if (i === 0 && j === 0) continue;
+            const xVecino = (x + i + columnas) % columnas;
+            const yVecino = (y + j + filas) % filas;
+            if (tablero[xVecino][yVecino].isAlive) {
+                contador++;
+            }
+        }
+    }
+    return contador;
+}
+
+// Calcula el nuevo estado basado en las reglas de Conway
+function calcularNuevoEstado(isAlive, vecinosVivos) {
+    if (isAlive) {
+        return vecinosVivos === 2 || vecinosVivos === 3;
+    }
+    return vecinosVivos === 3;
+}
+
+// Redibuja el tablero en el canvas
+function redibujarTablero() {
+    limpiarTablero();
+    for (let y = 0; y < filas; y++) {
+        for (let x = 0; x < columnas; x++) {
+            const celula = tablero[x][y];
+            dibujarCelda(x, y, celula.isAlive ? blanco : negro);
+        }
+    }
+}
+
+// Dibuja una celda en el canvas
+function dibujarCelda(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x * tileX, y * tileY, tileX, tileY);
+}
+
+// Limpia el canvas
+function limpiarTablero() {
+    ctx.clearRect(0, 0, canvasX, canvasY);
+}
+
+// Iniciar el juego
+window.onload = init;
