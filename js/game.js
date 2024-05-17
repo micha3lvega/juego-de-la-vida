@@ -2,119 +2,142 @@
 let ctx;
 let canvas;
 const fps = 30;
-const canvasX = 500; // ancho del canvas en pixeles
-const canvasY = 500; // alto del canvas en pixeles
+
+// Pixeles
+const canvasX = 500; // pixels ancho
+const canvasY = 500; // pixels alto
 let tileX, tileY;
+
+// Variables relacionadas con el tablero de juego
 const filas = 100;
 const columnas = 100;
+
 const negro = '#000000';
 const blanco = '#FFFFFF';
-let tablero = inicializarTablero(filas, columnas);
 
-// Inicializa el canvas y empieza el juego
+let celulas = inicializarCelulas(filas, columnas);
+
+class Celula {
+    constructor(valorX, valorY, estado) {
+        this.posicionX = valorX;
+        this.posicionY = valorY;
+        this.isAlive = estado === 1; // Vivo 1, Muerto = 0
+    }
+}
+
 function init() {
+    // Asociamos el canvas
     canvas = document.getElementById('pantalla');
     ctx = canvas.getContext('2d');
+
+    // Ajustamos el tamaño del canvas
     canvas.width = canvasX;
     canvas.height = canvasY;
-    tileX = Math.floor(canvasX / filas);
-    tileY = Math.floor(canvasY / columnas);
+
+    // Calculamos los tamaños de los lados rectangulos
+    tileX = Math.floor(canvasX / columnas);
+    tileY = Math.floor(canvasY / filas);
+
     iniciarTablero();
+
+    // Llamar el metodo mutar un numero N dado según los fps en un segundo
     setInterval(mutar, 1000 / fps);
 }
 
-// Inicializa un tablero de celdas
-function inicializarTablero(filas, columnas) {
-    const array = new Array(filas);
-    for (let y = 0; y < filas; y++) {
-        array[y] = new Array(columnas).fill(null);
-    }
-    return array;
-}
-
-// Inicia el tablero con células aleatorias
-function iniciarTablero() {
-    for (let y = 0; y < filas; y++) {
-        for (let x = 0; x < columnas; x++) {
-            const estado = Math.floor(Math.random() * 2);
-            tablero[x][y] = new Celula(x, y, estado);
-            dibujarCelda(x, y, estado ? blanco : negro);
-        }
-    }
-}
-
-// Representa una celula
-function Celula(x, y, estado) {
-    this.x = x;
-    this.y = y;
-    this.isAlive = estado === 1;
-}
-
-// Calcula el nuevo estado del tablero
 function mutar() {
-    const nuevasCelulas = inicializarTablero(filas, columnas);
+    // Actualiza el estado de las celulas
+    const nuevasCelulas = mutacion();
+
+    // Actualizar tablero
+    redibujarTablero(nuevasCelulas);
+}
+
+function mutacion() {
+    const nuevasCelulas = inicializarCelulas(filas, columnas);
+
+    // Recorrer las filas y columnas
     for (let y = 0; y < filas; y++) {
         for (let x = 0; x < columnas; x++) {
             nuevasCelulas[x][y] = calculaNuevoEstado(x, y);
         }
     }
-    tablero = nuevasCelulas;
-    redibujarTablero();
+
+    return nuevasCelulas;
 }
 
-// Calcula el nuevo estado de una celula basándose en sus vecinos
+function iniciarTablero() {
+    // Recorrer las filas y columnas del tablero
+    for (let y = 0; y < filas; y++) {
+        for (let x = 0; x < columnas; x++) {
+            const celula = new Celula(x, y, Math.floor(Math.random() * 2));
+            dibujarCelda(x * tileX, y * tileY, tileX, tileY, celula.isAlive ? blanco : negro);
+            celulas[x][y] = celula;
+        }
+    }
+}
+
 function calculaNuevoEstado(x, y) {
-    const celula = tablero[x][y];
-    const celulasVecinasVivas = contarVecinosVivos(x, y);
+    const celula = celulas[x][y];
+    const celulasVecinasVivas = contarVecinoVivos(celula);
+
     const nuevoEstado = calcularNuevoEstado(celula.isAlive, celulasVecinasVivas);
-    return new Celula(x, y, nuevoEstado);
+
+    return new Celula(x, y, nuevoEstado ? 1 : 0);
 }
 
-// Cuenta los vecinos vivos de una celula
-function contarVecinosVivos(x, y) {
-    let contador = 0;
+function contarVecinoVivos(celula) {
+    let contadorDeCelulasVivas = 0;
+
+    // Recorrer los vecinos en el eje X e Y
     for (let i = -1; i <= 1; i++) {
         for (let j = -1; j <= 1; j++) {
             if (i === 0 && j === 0) continue;
-            const xVecino = (x + i + columnas) % columnas;
-            const yVecino = (y + j + filas) % filas;
-            if (tablero[xVecino][yVecino].isAlive) {
-                contador++;
+
+            const xVecino = (celula.posicionX + i + columnas) % columnas;
+            const yVecino = (celula.posicionY + j + filas) % filas;
+
+            if (celulas[xVecino][yVecino].isAlive) {
+                contadorDeCelulasVivas++;
             }
         }
     }
-    return contador;
+
+    return contadorDeCelulasVivas;
 }
 
-// Calcula el nuevo estado basado en las reglas de Conway
-function calcularNuevoEstado(isAlive, vecinosVivos) {
+function calcularNuevoEstado(isAlive, celulasVecinasVivas) {
     if (isAlive) {
-        return vecinosVivos === 2 || vecinosVivos === 3;
+        return celulasVecinasVivas === 2 || celulasVecinasVivas === 3;
+    } else {
+        return celulasVecinasVivas === 3;
     }
-    return vecinosVivos === 3;
 }
 
-// Redibuja el tablero en el canvas
-function redibujarTablero() {
+function redibujarTablero(nuevasCelulas) {
+    // Limpiar el tablero
     limpiarTablero();
+
+    // Recorrer las filas y columnas
     for (let y = 0; y < filas; y++) {
         for (let x = 0; x < columnas; x++) {
-            const celula = tablero[x][y];
-            dibujarCelda(x, y, celula.isAlive ? blanco : negro);
+            const celula = nuevasCelulas[x][y];
+            dibujarCelda(x * tileX, y * tileY, tileX, tileY, celula.isAlive ? blanco : negro);
+            celulas[x][y] = celula;
         }
     }
 }
 
-// Dibuja una celda en el canvas
-function dibujarCelda(x, y, color) {
+function inicializarCelulas(filas, columnas) {
+    return new Array(filas).fill(null).map(() => new Array(columnas));
+}
+
+function dibujarCelda(ejeX, ejeY, tamX, tamY, color) {
     ctx.fillStyle = color;
-    ctx.fillRect(x * tileX, y * tileY, tileX, tileY);
+    ctx.fillRect(ejeX, ejeY, tamX, tamY);
 }
 
-// Limpia el canvas
 function limpiarTablero() {
-    ctx.clearRect(0, 0, canvasX, canvasY);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// Iniciar el juego
 window.onload = init;
