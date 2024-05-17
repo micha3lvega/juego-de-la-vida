@@ -38,6 +38,9 @@ function init() {
     tileX = Math.floor(canvasX / columnas);
     tileY = Math.floor(canvasY / filas);
 
+    // Añadir evento de clic al canvas
+    canvas.addEventListener('click', toggleCelda);
+
     iniciarTablero();
 
     // Llamar el metodo mutar un numero N dado según los fps en un segundo
@@ -138,6 +141,15 @@ function dibujarCelda(ejeX, ejeY, tamX, tamY, color) {
 
 function limpiarTablero() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function toggleCelda(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor((event.clientX - rect.left) / tileX);
+    const y = Math.floor((event.clientY - rect.top) / tileY);
+
+    celulas[x][y].isAlive = !celulas[x][y].isAlive;
+    redibujarTablero(celulas);
 }
 
 window.onload = init;
